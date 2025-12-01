@@ -1,0 +1,36 @@
+import cv2
+from deepface import DeepFace
+
+# Caminho para o dataset
+db_path = "dataset/"
+
+# Inicializar a câmera
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Detectar e reconhecer pessoas no frame
+    results = DeepFace.find(img_path = frame, db_path = db_path, enforce_detection=False)
+
+    # Se houver resultados
+    if len(results) > 0:
+        # Pega o nome da pessoa mais próxima encontrada
+        identity = results[0].iloc[0]['identity']
+        person_name = identity.split("/")[-2]  # nome da pasta = nome da pessoa
+
+        # Exibir na tela
+        cv2.putText(frame, person_name, (50, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+
+    # Mostrar resultado
+    cv2.imshow("Reconhecimento Facial", frame)
+
+    # Pressione 'q' para sair
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
